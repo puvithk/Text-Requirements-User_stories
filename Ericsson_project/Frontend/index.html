@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elegant Text Upload</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background">
+        <div class="floating-shape shape1"></div>
+        <div class="floating-shape shape2"></div>
+        <div class="floating-shape shape3"></div>
+    </div>
+    <div class="container">
+        <h1><i class="fas fa-cloud-upload-alt"></i>Text Upload</h1>
+        <p class="subtitle">Seamlessly upload your text documents</p>
+        <form action="/upload" class="dropzone" id="myDropzone">
+            <div class="dz-message" data-dz-message>
+                <i class="fas fa-file-alt file-icon"></i>
+                <span>Drop your text file here or click to upload</span>
+            </div>
+        </form>
+        <div id="upload-status" class="hidden">
+            <i class="fas fa-check-circle"></i>
+            <span>Upload successful!</span>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

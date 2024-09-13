@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+body, html {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffffff;
+}
+
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #3a1c71, #d76d77, #ffaf7b);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    z-index: -1;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.floating-shape {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: float 10s infinite;
+}
+
+.shape1 {
+    width: 80px;
+    height: 80px;
+    top: 10%;
+    left: 10%;
+}
+
+.shape2 {
+    width: 120px;
+    height: 120px;
+    top: 70%;
+    right: 20%;
+    animation-delay: -3s;
+}
+
+.shape3 {
+    width: 60px;
+    height: 60px;
+    bottom: 15%;
+    left: 25%;
+    animation-delay: -6s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+.container {
+    background-color: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    transition: all 0.3s ease;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+#myDropzone {
+    border: 2px dashed rgba(255, 255, 255, 0.5);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    padding: 2rem;
+}
+
+#myDropzone:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #ffffff;
+}
+
+.dz-message {
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.file-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+#upload-status {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    border-radius: 10px;
+    background-color: rgba(46, 204, 113, 0.8);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#upload-status.show {
+    opacity: 1;
+}
+
+#upload-status i {
+    margin-right: 0.5rem;
+}
+
+.hidden {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.container {
+    animation: fadeIn 1s ease-out;
+}

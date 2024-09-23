@@ -1,20 +1,27 @@
 Dropzone.options.myDropzone = {
-    url: "http://127.0.0.1:5000/upload",  // Updated to match backend URL
+    url: "http://127.0.0.1:5000/upload",
     method: "post",
     acceptedFiles: ".txt",
     maxFilesize: 5, // MB
     timeout: 180000, // Set timeout to 3 minutes
+    autoProcessQueue: false, // Prevent automatic upload
+    addRemoveLinks: true, // Add remove link to uploaded files
     init: function() {
+        var myDropzone = this;
+
         this.on("addedfile", function(file) {
             console.log("File added:", file.name);
         });
+
         this.on("sending", function(file, xhr, formData) {
             console.log("Sending file:", file.name);
         });
+
         this.on("success", function(file, response) {
             console.log("File uploaded successfully:", response);
             showUploadStatus(true);
         });
+
         this.on("error", function(file, errorMessage, xhr) {
             console.error("Error uploading file:", errorMessage);
             if (xhr) {
@@ -23,13 +30,22 @@ Dropzone.options.myDropzone = {
             }
             showUploadStatus(false, errorMessage);
         });
+
+        // Add event listener for the upload button
+        document.getElementById('uploadBtn').addEventListener('click', function() {
+            myDropzone.processQueue(); // Process the queue when the button is clicked
+        });
+
+        // Prevent Dropzone from removing the file automatically
+        this.on("complete", function(file) {
+            if (file.status === 'success') {
+                // Don't remove the file, just update UI as needed
+                showUploadStatus(true);
+            }
+        });
     }
 };
 
-// Test server connectivity
-fetch("http://127.0.0.1:5000/upload", {method: "OPTIONS"})
-    .then(response => console.log("Server is reachable"))
-    .catch(error => console.error("Cannot reach server:", error));
 function showUploadStatus(success, message) {
     const statusElement = document.getElementById('upload-status');
     statusElement.classList.remove('hidden');

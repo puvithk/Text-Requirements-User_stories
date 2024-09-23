@@ -152,3 +152,29 @@ h1 {
 .container {
     animation: fadeIn 1s ease-out;
 }
+
+
+.btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #2980b9;
+}
+
+.dropzone .dz-remove {
+    color: #e74c3c;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.dropzone .dz-remove:hover {
+    text-decoration: underline;
+}

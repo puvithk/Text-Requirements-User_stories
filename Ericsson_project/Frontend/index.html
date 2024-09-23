@@ -15,19 +15,21 @@
         <div class="floating-shape shape2"></div>
         <div class="floating-shape shape3"></div>
     </div>
+    
     <div class="container">
-        <h1><i class="fas fa-cloud-upload-alt"></i>Text Upload</h1>
+        <h1>Text Upload</h1>
         <p class="subtitle">Seamlessly upload your text documents</p>
-        <form action="/upload" class="dropzone" id="myDropzone">
+        
+        <form id="myDropzone" class="dropzone" action="/upload" method="post" enctype="multipart/form-data">
             <div class="dz-message" data-dz-message>
-                <i class="fas fa-file-alt file-icon"></i>
                 <span>Drop your text file here or click to upload</span>
             </div>
         </form>
-        <div id="upload-status" class="hidden">
-            <i class="fas fa-check-circle"></i>
-            <span>Upload successful!</span>
-        </div>
+        
+        <button id="uploadBtn" class="btn">Upload File</button>
+        
+        <div id="upload-status" class="hidden"></div>
+    </div>
     </div>
     <script src="script.js"></script>
 </body>

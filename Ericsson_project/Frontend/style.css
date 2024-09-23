@@ -152,7 +152,7 @@ h1 {
 .container {
     animation: fadeIn 1s ease-out;
 }
-/* Add this to your existing style.css file */
+
 
 .btn {
     background-color: #3498db;
@@ -169,7 +169,6 @@ h1 {
     background-color: #2980b9;
 }
 
-/* You might also want to style the remove link added by Dropzone */
 .dropzone .dz-remove {
     color: #e74c3c;
     margin-top: 5px;

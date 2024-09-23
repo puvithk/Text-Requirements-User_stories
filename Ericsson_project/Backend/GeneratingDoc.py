@@ -1,14 +1,14 @@
 import google.generativeai as genai
 import os
-
+from dotenv import load_dotenv
 class UserStroies:
     def __init__(self, filePath):
-    
+        load_dotenv()
         self.filePath = filePath #uploads/puvith.txt
         self.data =''
         self.preprocessed =""
         self.UserStory =""
-        genai.configure(api_key="AIzaSyA_tdgt_Gpm6Arjx48cRCdAxscg39bTwzk")
+        genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
         self.model = genai.GenerativeModel("gemini-1.5-flash")
 
         with open(filePath, 'r')as file :

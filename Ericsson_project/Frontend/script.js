@@ -13,6 +13,9 @@ Dropzone.options.myDropzone = {
         });
         this.on("success", function(file, response) {
             console.log("File uploaded successfully:", response);
+           
+
+            console.log("2 seconds later");
             showUploadStatus(true);
         });
         this.on("error", function(file, errorMessage, xhr) {
@@ -31,10 +34,12 @@ fetch("http://127.0.0.1:5000/upload", {method: "OPTIONS"})
     .then(response => console.log("Server is reachable"))
     .catch(error => console.error("Cannot reach server:", error));
 function showUploadStatus(success, message) {
+
     const statusElement = document.getElementById('upload-status');
     statusElement.classList.remove('hidden');
     statusElement.classList.add('show');
-    
+   
+    console.log(s)
     if (success) {
         statusElement.innerHTML = '<i class="fas fa-check-circle"></i> <span>Upload successful!</span>';
         statusElement.style.backgroundColor = 'rgba(46, 204, 113, 0.8)';
@@ -48,7 +53,7 @@ function showUploadStatus(success, message) {
         setTimeout(() => {
             statusElement.classList.add('hidden');
         }, 300);
-    }, 5000);
+    }, 50000);
 }
 
 // Test server connectivity

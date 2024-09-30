@@ -1,0 +1,91 @@
+/* General container styling */
+
+
+/* Button styling */
+.download-section button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  text-transform: uppercase;
+  font-size: 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s;
+}
+
+.download-section button:hover {
+  background-color: #45a049;
+}
+
+/* Document grid */
+.documents {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two-column layout */
+  gap: 30px;
+  justify-items: center;
+}
+
+/* Individual document box */
+.document {
+  background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);
+  width: 180px;
+  height: 120px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative; /* For absolute positioning of the download icon */
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.document i {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.document span {
+  margin-top: 5px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.document:hover {
+  background-color: #f4f4f4;
+  transform: translateY(-5px); /* Adds a lift effect on hover */
+}
+
+/* Download icon at the bottom right */
+.download-icon {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 16px;
+  color: #4CAF50; /* Download icon color */
+}
+.main-download{
+  padding: 25px;
+  /*background: linear-gradient(to bottom, #8e44ad, #e0e0e0);  Gradient background */
+  background: linear-gradient(45deg, #3a1c71, #d76d77, #ffaf7b);
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+
+}
+.download-section{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.code-download{
+  
+
+}

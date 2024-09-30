@@ -1,7 +1,7 @@
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
-class UserStroies:
+class UserStories:
     def __init__(self, filePath):
         load_dotenv()
         self.filePath = filePath #uploads/puvith.txt
@@ -47,4 +47,4 @@ class UserStroies:
             print(e)
             return False
 if __name__ =="__main__":
-    userStries= UserStroies("Text-Requirements-User_stories/Ericsson_project/Backend/uploads/gsdgvasfw.txt")
+    userStries= UserStories("Text-Requirements-User_stories/Ericsson_project/Backend/uploads/gsdgvasfw.txt")

@@ -62,12 +62,13 @@ class UserStories(AIModel):
             return False
     def GenerateUserStories(self):
         expected = "User Story example: As a [user], I want to [action], so that [reason/benefit]."
-        prompt = (f"Context: Act as a product user. Create a high-level in detailed user story using the following \n{self._preprocessed} in the format: \n{expected}.Avoid statements like 'Functional Requirement.")
+        prompt = (f"Context: Act as a product user. Create a high-level in detailed user story using the following \n{self._preprocessed} in the format: \n{expected}.Avoid statements like 'Functional Requirement ")
         self.UserStory ,self.unProcessed = self.Generate_response(prompt)
         if not self.UserStory:
                 return None,None
+        print("UserStories :")
         return self.UserStory , self.unProcessed
-        
+#SRS Document class
 class SRSDocument(AIModel):
     def __init__(self,Userstroy):
         super().__init__()
@@ -79,9 +80,10 @@ class SRSDocument(AIModel):
                   f"{self.UserStory}")        
         self.SRSdocument,self.unProcessedSRS = self.Generate_response(prompt) 
         if not self.SRSdocument:
-            return None,None     
+            return None,None  
+        print(self.unProcessedSRS)   
         return self.SRSdocument ,self.unProcessedSRS
-       
+#HLD Document class       
 class HLDDocument(AIModel):
     def __init__(self,SRSDocument):
         super().__init__()
@@ -92,7 +94,11 @@ class HLDDocument(AIModel):
         self.HLDoc ,self.unProcessed= self.Generate_response(prompt)
         if not self.HLDoc:
             return None,None
+        print("HLD :")
         return self.HLDoc,self.unProcessed
+    
+
+#LLD Document class
 class  LLDDocument(AIModel):
     def __init__(self,HLDDocument):
         super().__init__()
@@ -103,7 +109,9 @@ class  LLDDocument(AIModel):
         self.LLDdoc ,self.unProcessed= self.Generate_response(prompt)
         if not self.LLDdoc:
             return None,None
+        print("LLD :")
         return self.LLDdoc,self.unProcessed
+#Generating code 
 class CodeGeneration(AIModel):
     def __init__(self,LLDDocument):
         super().__init__()
@@ -120,13 +128,14 @@ class CodeGeneration(AIModel):
                 It must be based on the LLD document low-level design (LLD) Given below.:\n{self.LLDdoc}"""
         self.CodePath = self.Generate_response(prompt)
         return self.CodePath
+    #This Function is Not Userd For now 
     def CreateFiles(self):
         self.filteredData = self.CodePath.split("#")[1]
         basePath = os.path.join(os.getcwd(), "Text-Requirements-User_stories/Ericsson_project/Backend")
         dict_data ={}
         try:
             dict_data = eval(self.filteredData.strip())
-            print(dict_data)
+           
         except Exception as e:
             print(f"Error: {e}")
         self.code = self.Generate_response(f'Generate code for mentioned lld {self.LLDdoc} Provide only code no extra Add #-start fileName: Code /#/-end of each code Also provide the requiremnets.txt and package.json file ')
@@ -146,12 +155,12 @@ class CodeGeneration(AIModel):
         if code:
             listNew = code.split('#-start')[1:]
         else :
-            print(f'Could Not get the code ::::::::::::')
+      
             return False
-        print()
+ 
         pathandcode ={}
         for listItems in listNew:
-            print(listItems)
+   
             sample_text =str(listItems).split("#-end")
            
             pathandcode[sample_text[0].split(":")[1]] = sample_text
@@ -167,7 +176,7 @@ class CodeGeneration(AIModel):
             try:
                 os.makedirs(os.path.dirname(fullChanged), exist_ok=True)
                 with open(fullChanged.replace("-end",""),"w") as file:
-                    newCode = re.sub(r'(JavaScript|Python|Ruby)', '', code[1], flags=re.IGNORECASE).strip()
+                    newCode = re.sub(r'(JavaScript|Python|Ruby|html|json)', '', code[1], flags=re.IGNORECASE).strip()
                     file.write(newCode)
             except Exception as e :
                 print(e)
@@ -184,18 +193,20 @@ def main():
     userStories.read_file()  # Read file content
     userStories.preprocessing() 
     userOutput ,unProcessed  = userStories.GenerateUserStories()  
-    print(unProcessed)
-    generate_word_from_txt(unProcessed , "UserStories.txt")
+    print(userOutput , unProcessed.text) 
+
     """
     srsDoc = SRSDocument(userStories.UserStory)
-    srsOutput = srsDoc.GenerateSRS()  
-
+    srsOutput, unProcessedSrs = srsDoc.GenerateSRS() 
+    generate_word_from_txt(unProcessedSrs,"TestHLD.docx")
+  
     hldDoc = HLDDocument(srsOutput)
     hldOutput =hldDoc.GenerateHLD()  
 
 
     lldDoc = LLDDocument(hldOutput)
     lldOutput =lldDoc.GenerateLLD()  
+
 
     print("Generated User Story:\n", userOutput)
     print("\nGenerated SRS Document:\n", srsOutput)

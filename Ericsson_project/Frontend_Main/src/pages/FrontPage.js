@@ -28,7 +28,7 @@ const FrontPage = () => {
       setLoading(true);
       const response = await axios.post('http://localhost:5000/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
-        timeout: 180000,
+        timeout: 1800000,
       });
 
       // Assuming the API returns some data and no errors

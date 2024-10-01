@@ -9,7 +9,7 @@ import time
 import logging
 from GeneratingDoc import UserStories
 from GenertingDocument import CodeGeneration, HLDDocument,LLDDocument,UserStories,SRSDocument
-from ConvertToDoc import generate_word_from_txt
+from ConvertToDoc import generate_word_from_txt ,txt_to_docx
 app = Flask(__name__)
 CORS(app, resources={r"/upload": {"origins": "*"}}) 
 CORS(app, resources={r"/refresh": {"origins": "*"}}) 
@@ -52,19 +52,19 @@ def upload_file():
         Userprocessed ,UserUnProcessed = UserOutput.GenerateUserStories()
         if not Userprocessed:
             return jsonify({'error': 'An error occured in server'}), 500
-        time.sleep(5)
+    
         #Generating SRS Document 
         srsDoc = SRSDocument(Userprocessed)
         srsOutput,SRSUnProcessed = srsDoc.GenerateSRS()
         if not srsOutput:
             return jsonify({'error': 'An error occured in server'}), 500
-        time.sleep(5)
+        
         #Generating HLD Document 
         hldDoc = HLDDocument(srsOutput)
         hldOutput,hldUnProcessed =hldDoc.GenerateHLD()
         if not hldOutput:
             return jsonify({'error': 'An error occured in server'}), 500
-        time.sleep(5)
+        
         #Generating LLD Document 
         lldDoc = LLDDocument(hldOutput)
         lldOutput,lldUnProcessed =lldDoc.GenerateLLD() 
@@ -79,20 +79,29 @@ def upload_file():
 
         
   
-    
+        
         generate_word_from_txt(Requirements , "Requirements.txt")
         generate_word_from_txt(UserUnProcessed.text , "UserStories.txt")
         generate_word_from_txt(SRSUnProcessed.text  , "SRS.txt")
         generate_word_from_txt(hldUnProcessed.text , "HLD.txt")
         generate_word_from_txt(lldUnProcessed.text , "LLd.txt")
+        
         with open(os.path.join(os.getcwd(),"AllDocuments","UserStories.txt") , "w") as file :
             file.write(Userprocessed)
+        
         with open(os.path.join("AllDocuments","srsOutput.txt" ), "w")as file :
             file.write(srsOutput)
         with open(os.path.join("AllDocuments","hldOutput.txt" ), "w") as file :
             file.write(hldOutput)
         with open(os.path.join("AllDocuments","lldOutput.txt" ), "w") as file :
             file.write(lldOutput)
+        
+        txt_to_docx(os.path.join(os.getcwd(),"AllDocuments","UserStories.txt"),"UserOutput.docx")
+        
+        txt_to_docx(os.path.join(os.getcwd(),"AllDocuments","srsOutput.txt" ),"srsOutput.docx")
+        txt_to_docx(os.path.join(os.getcwd(),"AllDocuments","hldOutput.txt" ),"HldOutput.docx")
+        txt_to_docx(os.path.join(os.getcwd(),"AllDocuments","lldOutput.txt" ),"lldOutput.txt")
+        
         return jsonify(
             {
                 "response" : "Processed"
@@ -103,7 +112,7 @@ def upload_file():
 #changed from here 
 @app.route("/get_requirements" , methods=['GET'])
 def get_requirements():
-    print("Entered")
+   
     file_path = os.path.join(DOCUMENTS_DIR, "Requirements.docx")
     
     if os.path.exists(file_path):
@@ -114,7 +123,7 @@ def get_requirements():
 #Downloading Files 
 @app.route('/get_user_stories', methods=['GET'])
 def get_user_stories():
-    print("Entered")
+ 
     file_path = os.path.join(DOCUMENTS_DIR, "UserStories.docx")
     
     if os.path.exists(file_path):
@@ -126,7 +135,7 @@ def get_user_stories():
 @app.route('/get_srs', methods=['GET'])
 def get_srs():
     file_path = os.path.join(DOCUMENTS_DIR, "SRS.docx")
-    print(f"Path : {file_path}")
+   
     if os.path.exists(file_path):
         return send_file(file_path, as_attachment=True, download_name="SRS.docx")
     else:

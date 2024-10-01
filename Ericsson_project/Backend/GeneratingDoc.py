@@ -13,7 +13,7 @@ class UserStories:
 
         with open(filePath, 'r')as file :
             self.data = file.read()
-        print(self.data)
+       
     def preprocessing(self):
         prompt = f"""Generate detailed requirements with key points from the following text:\n {self.data}"""
         try:

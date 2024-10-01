@@ -10,8 +10,9 @@ def create_heading(doc, text, level=1):
     doc.add_paragraph()  # Add an empty line before the heading for better spacing
     heading = doc.add_paragraph()
     run = heading.add_run(text)
-
-    if level == 1:
+    if level == 0:
+        run.font.size = Pt(20) # Main heading size 20
+    elif level == 1:
         run.font.size = Pt(16)  # Main heading size 16
     else:
         run.font.size = Pt(14)  # Subheading size 14
@@ -82,7 +83,9 @@ def process_content(doc, content):
 
     for line in lines:
         line = line.strip()  # Remove extra spaces
-
+        if line.startswith("##"):
+            create_heading(doc, line[2:],level=0)
+            continue
         # Check for main headings (e.g., **1. Heading**)
         if re.match(r"\*\*\d+\..*\*\*", line):
             heading_text = line[2:-2].strip()  # Remove the ** around the heading

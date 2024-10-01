@@ -96,11 +96,6 @@ def upload_file():
         with open(os.path.join("AllDocuments","lldOutput.txt" ), "w") as file :
             file.write(lldOutput)
         
-        txt_to_docx(os.path.join(os.getcwd(),"AllDocuments","UserStories.txt"),"UserOutput.docx")
-        
-        txt_to_docx(os.path.join(os.getcwd(),"AllDocuments","srsOutput.txt" ),"srsOutput.docx")
-        txt_to_docx(os.path.join(os.getcwd(),"AllDocuments","hldOutput.txt" ),"HldOutput.docx")
-        txt_to_docx(os.path.join(os.getcwd(),"AllDocuments","lldOutput.txt" ),"lldOutput.txt")
         
         return jsonify(
             {

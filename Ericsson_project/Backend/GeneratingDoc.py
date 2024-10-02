@@ -48,3 +48,14 @@ class UserStories:
             return False
 if __name__ =="__main__":
     userStries= UserStories("Text-Requirements-User_stories/Ericsson_project/Backend/uploads/gsdgvasfw.txt")
+
+# if os.path.exists(os.path.join(DOCUMENTS_DIR, "Requirements.docx")):
+#         DOCUMENT_STATUS["Requirements"] = True
+#     if os.path.exists(os.path.join(DOCUMENTS_DIR, "UserStories.docx")):
+#         DOCUMENT_STATUS["UserStories"] = True
+#     if os.path.exists(os.path.join(DOCUMENTS_DIR, "SRS.docx")):
+#         DOCUMENT_STATUS["SRS"] = True
+#     if os.path.exists(os.path.join(DOCUMENTS_DIR, "LLD.docx")):
+#         DOCUMENT_STATUS["LLD"] = True
+#     if os.path.exists(os.path.join(DOCUMENTS_DIR, "HLD.docx")):
+#         DOCUMENT_STATUS["HLD"] = True

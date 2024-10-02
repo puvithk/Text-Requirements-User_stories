@@ -7,8 +7,10 @@ import os
 import shutil
 import time 
 import threading
+from threading import Lock
 import logging
 import multiprocessing
+from multiprocessing import Manager
 from GeneratingDoc import UserStories
 from GenertingDocument import CodeGeneration, HLDDocument,LLDDocument,UserStories,SRSDocument
 from ConvertToDoc import generate_word_from_txt ,txt_to_docx
@@ -16,15 +18,41 @@ app = Flask(__name__)
 CORS(app, resources={r"/upload": {"origins": "*"}}) 
 CORS(app, resources={r"/refresh": {"origins": "*"}}) 
 CORS(app, resources={r"/*": {"origins": "*"}})
+start_log = Lock()
 logging.basicConfig(level=logging.DEBUG)
 DOCUMENTS_DIR = os.path.join(os.getcwd(), "AllDocuments")
 UPLOAD_FOLDER = 'uploads'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
+if not os.path.exists(DOCUMENTS_DIR):
+    os.makedirs(DOCUMENTS_DIR)
 ALL_THREADS =[]
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB limit
 
+
+@app.route("/Document_Status", methods=["GET"])
+def document_status():
+    DOCUMENT_STATUS = {
+    "Requirements": False,
+    "UserStories": False,
+    "SRS": False,
+    "HLD": False,
+    "LLD": False,
+    "FullCode": False
+    }
+    for i , j  in DOCUMENT_STATUS.items():
+        print(os.path.join(DOCUMENTS_DIR, f'{i}.docx'))
+        if os.path.exists(os.path.join(DOCUMENTS_DIR, f'{i}.docx')):
+        
+            DOCUMENT_STATUS[i] = True
+            
+    if os.listdir(os.path.join(os.getcwd(), 'FullCode')):
+        DOCUMENT_STATUS["FullCode"] = True
+
+    print(DOCUMENT_STATUS)
+    return jsonify(DOCUMENT_STATUS), 200
+        
 @app.route('/upload', methods=['POST', 'OPTIONS'])
 def upload_file():
     if request.method == 'OPTIONS':
@@ -58,7 +86,64 @@ def upload_file():
         time.sleep(5)
         return response
 
+
+def generate_All_file(filename ):
+    #Generating Userstory
+        global requirements,user_stories,srs,hld,lld,full_code
+        UserOutput = UserStories(filename)
+        Requirements =UserOutput.read_file()
+        generate_word_from_txt(Requirements , "Requirements.txt")
+        requirements = True
         
+        if not UserOutput.preprocessing():
+            return jsonify({'error': 'An error occured in server'}), 500
+        Userprocessed ,UserUnProcessed = UserOutput.GenerateUserStories()
+        if not Userprocessed:
+            return jsonify({'error': 'An error occured in server'}), 500
+        
+        generate_word_from_txt(UserUnProcessed.text , "UserStories.txt")
+        
+
+        #Generating SRS Document 
+        srsDoc = SRSDocument(Userprocessed)
+        srsOutput,SRSUnProcessed = srsDoc.GenerateSRS()
+        if not srsOutput:
+            return jsonify({'error': 'An error occured in server'}), 500
+        generate_word_from_txt(SRSUnProcessed.text  , "SRS.txt")
+       
+        #Generating HLD Document 
+        hldDoc = HLDDocument(srsOutput)
+        hldOutput,hldUnProcessed =hldDoc.GenerateHLD()
+        if not hldOutput:
+            return jsonify({'error': 'An error occured in server'}), 500
+        generate_word_from_txt(hldUnProcessed.text , "HLD.txt")
+       
+
+        #Generating LLD Document 
+        lldDoc = LLDDocument(hldOutput)
+        lldOutput,lldUnProcessed =lldDoc.GenerateLLD() 
+        if not lldOutput:
+            return jsonify({'error': 'An error occured in server'}), 500
+        generate_word_from_txt(lldUnProcessed.text , "LLd.txt")
+     
+        time.sleep(10)
+        #Generating Code 
+        output =CodeGeneration(lldOutput)
+        if not output.CreateCode():
+            return jsonify({'error': 'An error occured in server'}), 500
+        
+        with open(os.path.join(os.getcwd(),"AllDocuments","UserStories.txt") , "w") as file :
+            file.write(Userprocessed)
+        
+        with open(os.path.join("AllDocuments","srsOutput.txt" ), "w")as file :
+            file.write(srsOutput)
+        with open(os.path.join("AllDocuments","hldOutput.txt" ), "w") as file :
+            file.write(hldOutput)
+        with open(os.path.join("AllDocuments","lldOutput.txt" ), "w") as file :
+            file.write(lldOutput)
+
+
+
 #changed from here 
 @app.route("/get_requirements" , methods=['GET'])
 def get_requirements():
@@ -151,16 +236,16 @@ def get_all_documents():
         return jsonify({'error': 'An error occurred while creating the zip file'}), 500
 @app.route('/get_full_code',methods=['GET'])
 def get_full_code():
-    folder_path = os.path.join(os.getcwd(), 'AllCode')
+    folder_path = os.path.join(os.getcwd(), 'FullCode')
     
     # Path to the output zip file
     while not os.listdir(folder_path):
-        time.sleep(30)
-    zip_filename = os.path.join(os.getcwd(), 'AllCode.zip')
+        time.sleep(10)
+    zip_filename = os.path.join(os.getcwd(), 'FullCode.zip')
     
     try:
         
-        shutil.make_archive('AllCode', 'zip', folder_path) 
+        shutil.make_archive('FullCode', 'zip', folder_path) 
 
         return send_file(zip_filename , as_attachment=True)
     
@@ -169,7 +254,7 @@ def get_full_code():
 
 @app.route('/refresh', methods=['GET'])
 def refresh():
-    all_code_dir = os.path.join(os.getcwd(), 'AllCode')
+    all_code_dir = os.path.join(os.getcwd(), 'FullCode')
     all_documents_dir = os.path.join(os.getcwd(), 'AllDocuments')
 
     # Function to remove directory contents
@@ -195,78 +280,21 @@ def refresh():
 
     
     clear_directory(all_code_dir)
+    clear_directory(UPLOAD_FOLDER)
+    global requirements,user_stories,srs,hld,lld,full_code
+    requirements= False
+    user_stories= False,
+    srs=False
+    hld= False
+    lld= False
+    full_code= False
+    
     if ALL_THREADS:
         thread = ALL_THREADS.pop()
         thread.terminate()
     clear_directory(all_documents_dir)
-
+    
     return jsonify({'message': 'Done'}), 200
-
-
-
-def generate_All_file(filename):
-    #Generating Userstory
-        UserOutput = UserStories(filename)
-        Requirements =UserOutput.read_file()
-        if not UserOutput.preprocessing():
-            return jsonify({'error': 'An error occured in server'}), 500
-        Userprocessed ,UserUnProcessed = UserOutput.GenerateUserStories()
-        if not Userprocessed:
-            return jsonify({'error': 'An error occured in server'}), 500
-        generate_word_from_txt(Requirements , "Requirements.txt")
-        generate_word_from_txt(UserUnProcessed.text , "UserStories.txt")
-        #Generating SRS Document 
-        srsDoc = SRSDocument(Userprocessed)
-        srsOutput,SRSUnProcessed = srsDoc.GenerateSRS()
-        if not srsOutput:
-            return jsonify({'error': 'An error occured in server'}), 500
-        generate_word_from_txt(SRSUnProcessed.text  , "SRS.txt")
-        #Generating HLD Document 
-        hldDoc = HLDDocument(srsOutput)
-        hldOutput,hldUnProcessed =hldDoc.GenerateHLD()
-        if not hldOutput:
-            return jsonify({'error': 'An error occured in server'}), 500
-        generate_word_from_txt(hldUnProcessed.text , "HLD.txt")
-
-        #Generating LLD Document 
-        lldDoc = LLDDocument(hldOutput)
-        lldOutput,lldUnProcessed =lldDoc.GenerateLLD() 
-        if not lldOutput:
-            return jsonify({'error': 'An error occured in server'}), 500
-        generate_word_from_txt(lldUnProcessed.text , "LLd.txt")
-
-        time.sleep(10)
-        #Generating Code 
-        output =CodeGeneration(lldOutput)
-        if not output.CreateCode():
-            return jsonify({'error': 'An error occured in server'}), 500
-
-        
-  
-        
-      
-        
-        
-        with open(os.path.join(os.getcwd(),"AllDocuments","UserStories.txt") , "w") as file :
-            file.write(Userprocessed)
-        
-        with open(os.path.join("AllDocuments","srsOutput.txt" ), "w")as file :
-            file.write(srsOutput)
-        with open(os.path.join("AllDocuments","hldOutput.txt" ), "w") as file :
-            file.write(hldOutput)
-        with open(os.path.join("AllDocuments","lldOutput.txt" ), "w") as file :
-            file.write(lldOutput)
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -275,4 +303,5 @@ def handle_exception(e):
     app.logger.error(f"Unhandled exception: {str(e)}", exc_info=True)
     return jsonify({'error': 'An unexpected error occurred'}), 500
 if __name__ == '__main__':
+   
     app.run(debug=True,port=5000)

@@ -17,11 +17,25 @@
   transition: background-color 0.3s;
 }
 
-.download-section button:hover ,.ALL-button {
+.download-section button:hover ,.ALL-button:hover {
   background-color: #45a049;
   transform: translateY(-5px);
 }
-
+.ALL-button{
+  margin: 10px;
+  width: 100px;
+  padding: 0;
+  font-size: small;
+  text-align: center;
+}
+.ALL-button:disabled ,.download-section button:disabled{
+  background-color: gray; /* Background color when disabled */
+  color: lightgray;       /* Text color when disabled */
+  cursor: not-allowed;    /* Change cursor to indicate it's not clickable */
+}
+.Buttons{
+  visibility: hidden ;
+}
 /* Document grid */
 .documents {
   display: grid;

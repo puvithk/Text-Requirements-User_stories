@@ -1,14 +1,24 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Corrected navigator issue
-import {Audio } from 'react-loader-spinner'
+import {Audio,InfinitySpin } from 'react-loader-spinner'
 const FrontPage = () => {
   const [uploadStatus, setUploadStatus] = useState({ show: false, success: false, message: '' });
   const [selectedFile, setSelectedFile] = useState(null); // Store the selected file
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate(); // Corrected the navigator issue
-
+  useEffect(()=>{
+    try{
+      const response = axios.get("http://localhost:5000/refresh")
+      .then((response) => {
+        console.log(response.data);
+    })}
+      catch{
+        console.log('Error')
+      }
+    }
+  ,[])
   const onDrop = (acceptedFiles) => {
     // Store the selected file from the dropzone
     const file = acceptedFiles[0];
@@ -55,16 +65,14 @@ const FrontPage = () => {
   return (
     <div className="background">
       {loading ? (
-        <div>
-          <Audio
-          height="80"
-          width="80"
-          radius="9"
+        <div className='main-loading'>
+          <InfinitySpin
+          height="200"
+          width="200"
+          radius="15"
           color="#3a1c71"
           ariaLabel="loading"
-          wrapperStyle
-          wrapperClass
-          ></Audio>
+          ></InfinitySpin>
           <div>loading....</div>
         </div>
       ) : (

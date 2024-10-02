@@ -127,8 +127,8 @@ class CodeGeneration(AIModel):
     def CreatePathFiles(self):
         prompt=f"""Create a structured that outlines the file paths and descriptions for the following components: *[list the components/modules]* 
                 Example : [
-                "navbar.js" : "/AllCode/assests/components/navbar.js" 
-                "Login.js" : "/AllCode/assests/pages/Login.js"] Without the description  ]
+                "navbar.js" : "/FullCode/assests/components/navbar.js" 
+                "Login.js" : "/FullCode/assests/pages/Login.js"] Without the description  ]
                 make sure that before the json # - put this symbole and end of symbole put # symbole
                 Note : This Is just a example it can be of any programing language or any framework.
                 It must be based on the LLD document low-level design (LLD) Given below.:\n{self.LLDdoc}"""
@@ -171,9 +171,9 @@ class CodeGeneration(AIModel):
            
             pathandcode[sample_text[0].split(":")[1]] = sample_text
           
-        #basePath = os.path.join(os.getcwd(),"Text-Requirements-User_stories","Ericsson_project", "AllCode")
+        #basePath = os.path.join(os.getcwd(),"Text-Requirements-User_stories","Ericsson_project", "FullCode")
         
-        basePath = os.path.join(os.getcwd(), "AllCode")
+        basePath = os.path.join(os.getcwd(), "FullCode")
       
         for path ,code in pathandcode.items():
             fullPath = os.path.join(basePath, path.lstrip('/'))

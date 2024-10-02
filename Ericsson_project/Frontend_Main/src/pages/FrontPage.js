@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Corrected navigator issue
-
+import {Audio } from 'react-loader-spinner'
 const FrontPage = () => {
   const [uploadStatus, setUploadStatus] = useState({ show: false, success: false, message: '' });
   const [selectedFile, setSelectedFile] = useState(null); // Store the selected file
@@ -55,7 +55,18 @@ const FrontPage = () => {
   return (
     <div className="background">
       {loading ? (
-        <div>Loading...</div>
+        <div>
+          <Audio
+          height="80"
+          width="80"
+          radius="9"
+          color="#3a1c71"
+          ariaLabel="loading"
+          wrapperStyle
+          wrapperClass
+          ></Audio>
+          <div>loading....</div>
+        </div>
       ) : (
         <>
           <div className="floating-shape shape1"></div>

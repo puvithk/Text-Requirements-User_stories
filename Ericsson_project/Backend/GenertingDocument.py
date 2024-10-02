@@ -6,20 +6,25 @@ import re
 from ConvertToDoc import generate_word_from_txt
 #Gemeni Model Initialization
 class AIModel:
+    
     def __init__(self):
+        self._preprocessed = None
         load_dotenv()
         genai.configure(api_key=os.getenv("GOOGLE_API_KEY")) # Google API
         self.model = genai.GenerativeModel("gemini-1.5-flash")
         self.model._generation_config.update({
-            'temperature': 0.2,
+            'temperature': 0.1,
             'top_k': 7,
             'top_p': 0.7
         })
          
-    def Generate_response(self, prompt):
+    def Generate_response(self, 
+                          prompt, 
+                          temperature = 0.2):
         response =None
         timer = 1
         responseText =None
+        
         while not response:
             try:
                 responseText = self.model.generate_content(prompt)
@@ -37,7 +42,7 @@ class UserStories(AIModel):
         super().__init__()
         self.filePath = filePath
         self._data = ''
-        self._preprocessed = None
+        
         self.UserStory = None
     def read_file(self):
         try:
@@ -49,7 +54,7 @@ class UserStories(AIModel):
         return self._data
     
     def preprocessing(self):
-        prompt = f"Generate detailed requirements with key points from the following text:\n{self._data}"
+        prompt = f"Generate detailed requirements with key points from the following text:\n{self._data} \n Collect as data as possible Do not missout any requirements or details Make it minimum of 2000 words "
         try:
             PreprocessedText = self.model.generate_content(prompt)
             PreprocessedText = PreprocessedText.text.replace('**', '').replace('*', '').replace('`', '')
@@ -62,7 +67,8 @@ class UserStories(AIModel):
             return False
     def GenerateUserStories(self):
         expected = "User Story example: As a [user], I want to [action], so that [reason/benefit]."
-        prompt = (f"Context: Act as a product user. Create a high-level in detailed user story using the following \n{self._preprocessed} in the format: \n{expected}.Avoid statements like 'Functional Requirement ")
+        prompt = (f"Context: Act as a product user. Create a high-level in detailed user story using the following \n{self._preprocessed} in the format: \n{expected} Also the give for all the requriments minimum of 10000 words NOTE : INCLUDE THE MINURED DETAIL ALSO ",
+                  )
         self.UserStory ,self.unProcessed = self.Generate_response(prompt)
         if not self.UserStory:
                 return None,None
@@ -76,12 +82,12 @@ class SRSDocument(AIModel):
         self.SRSdocument = None
     def GenerateSRS(self):
         expected = "User Story example: As a [user], I want to [action], so that [reason/benefit]."
-        prompt = (f"Generate a in detailed Software Requirement Specification (SRS) for the following user stories WithOut Diagram minumin of 2000 words:\n"
-                  f"{self.UserStory}")        
+        prompt = (f"Generate a in detailed Software Requirement Specification (SRS) for the following user stories WithOut Diagram minumin of 10000 words:\n"
+                  f"{self.UserStory} NOTE :First scan the Requirements \n{self._preprocessed}",
+                  )        
         self.SRSdocument,self.unProcessedSRS = self.Generate_response(prompt) 
         if not self.SRSdocument:
-            return None,None  
-        print(self.unProcessedSRS)   
+            return None,None   
         return self.SRSdocument ,self.unProcessedSRS
 #HLD Document class       
 class HLDDocument(AIModel):
@@ -90,8 +96,8 @@ class HLDDocument(AIModel):
         self.SoftwareRSProcessed = SRSDocument
         self.HLDoc = None
     def GenerateHLD(self):
-        prompt =  f"Task:Generate a in detailed High-Level Design (HLD) for the following SRS WithOut Diagram minium of 1500 words:\n{self.SoftwareRSProcessed}"
-        self.HLDoc ,self.unProcessed= self.Generate_response(prompt)
+        prompt =  f"Task:Generate a in detailed High-Level Design (HLD) for the following SRS WithOut Diagram minium of 10000 words:\n{self.SoftwareRSProcessed} NOTE :First scan the Requirements \n{self._preprocessed} and provide the minured details also :"
+        self.HLDoc ,self.unProcessed= self.Generate_response(prompt,)
         if not self.HLDoc:
             return None,None
         print("HLD :")
@@ -105,8 +111,8 @@ class  LLDDocument(AIModel):
         self.HLDoc = HLDDocument
         self.LLDdoc = None
     def GenerateLLD(self):
-        prompt = f"Task : Generate a Low-Level Design (LLD) in detailed for the following HLD , WithOut Diagram minium of 1500 words:\n{self.HLDoc}"
-        self.LLDdoc ,self.unProcessed= self.Generate_response(prompt)
+        prompt = f"Task : Generate a Low-Level Design (LLD) in detailed for the following HLD , WithOut Diagram minium of 10000 words:\n{self.HLDoc}NOTE :First scan the Requirements \n{self._preprocessed} and provide the minured details also :"
+        self.LLDdoc ,self.unProcessed= self.Generate_response(prompt,)
         if not self.LLDdoc:
             return None,None
         print("LLD :")

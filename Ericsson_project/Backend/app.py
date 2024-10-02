@@ -6,19 +6,22 @@ from flask_cors import CORS
 import os
 import shutil
 import time 
+import threading
 import logging
+import multiprocessing
 from GeneratingDoc import UserStories
 from GenertingDocument import CodeGeneration, HLDDocument,LLDDocument,UserStories,SRSDocument
 from ConvertToDoc import generate_word_from_txt ,txt_to_docx
 app = Flask(__name__)
 CORS(app, resources={r"/upload": {"origins": "*"}}) 
 CORS(app, resources={r"/refresh": {"origins": "*"}}) 
+CORS(app, resources={r"/*": {"origins": "*"}})
 logging.basicConfig(level=logging.DEBUG)
 DOCUMENTS_DIR = os.path.join(os.getcwd(), "AllDocuments")
 UPLOAD_FOLDER = 'uploads'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
-
+ALL_THREADS =[]
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB limit
 
@@ -43,73 +46,26 @@ def upload_file():
         #fileName : puvith.txt
         filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)#Uploads/puvith.txt
         file.save(filename)
-        
-        #Generating Userstory
-        UserOutput = UserStories(filename)
-        Requirements =UserOutput.read_file()
-        if not UserOutput.preprocessing():
-            return jsonify({'error': 'An error occured in server'}), 500
-        Userprocessed ,UserUnProcessed = UserOutput.GenerateUserStories()
-        if not Userprocessed:
-            return jsonify({'error': 'An error occured in server'}), 500
-    
-        #Generating SRS Document 
-        srsDoc = SRSDocument(Userprocessed)
-        srsOutput,SRSUnProcessed = srsDoc.GenerateSRS()
-        if not srsOutput:
-            return jsonify({'error': 'An error occured in server'}), 500
-        
-        #Generating HLD Document 
-        hldDoc = HLDDocument(srsOutput)
-        hldOutput,hldUnProcessed =hldDoc.GenerateHLD()
-        if not hldOutput:
-            return jsonify({'error': 'An error occured in server'}), 500
-        
-        #Generating LLD Document 
-        lldDoc = LLDDocument(hldOutput)
-        lldOutput,lldUnProcessed =lldDoc.GenerateLLD() 
-        if not lldOutput:
-            return jsonify({'error': 'An error occured in server'}), 500
-    
-        time.sleep(10)
-        #Generating Code 
-        output =CodeGeneration(lldOutput)
-        if not output.CreateCode():
-            return jsonify({'error': 'An error occured in server'}), 500
+        response = jsonify({
+            'message': f"File uploaded successfully: {file.filename}",
+            'filename': filename
+        })
+        response.status_code = 200
+        thread = multiprocessing.Process(target=generate_All_file , args=(filename,))
+        #thread = threading.Thread(target=generate_All_file , args=(filename,))
+        ALL_THREADS.append(thread)
+        thread.start()
+        time.sleep(5)
+        return response
 
         
-  
-        
-        generate_word_from_txt(Requirements , "Requirements.txt")
-        generate_word_from_txt(UserUnProcessed.text , "UserStories.txt")
-        generate_word_from_txt(SRSUnProcessed.text  , "SRS.txt")
-        generate_word_from_txt(hldUnProcessed.text , "HLD.txt")
-        generate_word_from_txt(lldUnProcessed.text , "LLd.txt")
-        
-        with open(os.path.join(os.getcwd(),"AllDocuments","UserStories.txt") , "w") as file :
-            file.write(Userprocessed)
-        
-        with open(os.path.join("AllDocuments","srsOutput.txt" ), "w")as file :
-            file.write(srsOutput)
-        with open(os.path.join("AllDocuments","hldOutput.txt" ), "w") as file :
-            file.write(hldOutput)
-        with open(os.path.join("AllDocuments","lldOutput.txt" ), "w") as file :
-            file.write(lldOutput)
-        
-        
-        return jsonify(
-            {
-                "response" : "Processed"
-             }), 200
-    else:
-        app.logger.warning("Invalid file type")
-        return jsonify({'error': 'Allowed file type is txt'}), 400
 #changed from here 
 @app.route("/get_requirements" , methods=['GET'])
 def get_requirements():
    
     file_path = os.path.join(DOCUMENTS_DIR, "Requirements.docx")
-    
+    while not os.path.exists(file_path):
+        time.sleep(1)
     if os.path.exists(file_path):
         return send_file(file_path, as_attachment=True, download_name="Requirements.docx")
     else:
@@ -120,7 +76,8 @@ def get_requirements():
 def get_user_stories():
  
     file_path = os.path.join(DOCUMENTS_DIR, "UserStories.docx")
-    
+    while not os.path.exists(file_path):
+        time.sleep(1)
     if os.path.exists(file_path):
         return send_file(file_path, as_attachment=True, download_name="UserStories.docx")
     else:
@@ -130,7 +87,8 @@ def get_user_stories():
 @app.route('/get_srs', methods=['GET'])
 def get_srs():
     file_path = os.path.join(DOCUMENTS_DIR, "SRS.docx")
-   
+    while not os.path.exists(file_path):
+        time.sleep(1)
     if os.path.exists(file_path):
         return send_file(file_path, as_attachment=True, download_name="SRS.docx")
     else:
@@ -140,6 +98,8 @@ def get_srs():
 @app.route('/get_hld', methods=['GET'])
 def get_hld():
     file_path = os.path.join(DOCUMENTS_DIR, "HLD.docx")
+    while not os.path.exists(file_path):
+        time.sleep(1)
     if os.path.exists(file_path):
         return send_file(file_path, as_attachment=True, download_name="HLD.docx")
     else:
@@ -149,6 +109,8 @@ def get_hld():
 @app.route('/get_lld', methods=['GET'])
 def get_lld():
     file_path = os.path.join(DOCUMENTS_DIR, "LLd.docx")
+    while not os.path.exists(file_path):
+        time.sleep(1)
     if os.path.exists(file_path):
         return send_file(file_path, as_attachment=True, download_name="LLD.docx")
     else:
@@ -172,6 +134,8 @@ def get_all_documents():
         with zipfile.ZipFile(memory_file, 'w') as zf:
             for file_name, download_name in file_list:
                 file_path = os.path.join(DOCUMENTS_DIR, file_name)
+                while not os.path.exists(file_path):
+                    time.sleep(1)
                 if os.path.exists(file_path):
                     zf.write(file_path, download_name)
                 else:
@@ -190,6 +154,8 @@ def get_full_code():
     folder_path = os.path.join(os.getcwd(), 'AllCode')
     
     # Path to the output zip file
+    while not os.listdir(folder_path):
+        time.sleep(30)
     zip_filename = os.path.join(os.getcwd(), 'AllCode.zip')
     
     try:
@@ -227,13 +193,82 @@ def refresh():
         else:
             app.logger.info(f"{directory_path} does not exist or is not a directory")
 
-   
-    clear_directory(all_code_dir)
     
-   
+    clear_directory(all_code_dir)
+    if ALL_THREADS:
+        thread = ALL_THREADS.pop()
+        thread.terminate()
     clear_directory(all_documents_dir)
 
     return jsonify({'message': 'Done'}), 200
+
+
+
+def generate_All_file(filename):
+    #Generating Userstory
+        UserOutput = UserStories(filename)
+        Requirements =UserOutput.read_file()
+        if not UserOutput.preprocessing():
+            return jsonify({'error': 'An error occured in server'}), 500
+        Userprocessed ,UserUnProcessed = UserOutput.GenerateUserStories()
+        if not Userprocessed:
+            return jsonify({'error': 'An error occured in server'}), 500
+        generate_word_from_txt(Requirements , "Requirements.txt")
+        generate_word_from_txt(UserUnProcessed.text , "UserStories.txt")
+        #Generating SRS Document 
+        srsDoc = SRSDocument(Userprocessed)
+        srsOutput,SRSUnProcessed = srsDoc.GenerateSRS()
+        if not srsOutput:
+            return jsonify({'error': 'An error occured in server'}), 500
+        generate_word_from_txt(SRSUnProcessed.text  , "SRS.txt")
+        #Generating HLD Document 
+        hldDoc = HLDDocument(srsOutput)
+        hldOutput,hldUnProcessed =hldDoc.GenerateHLD()
+        if not hldOutput:
+            return jsonify({'error': 'An error occured in server'}), 500
+        generate_word_from_txt(hldUnProcessed.text , "HLD.txt")
+
+        #Generating LLD Document 
+        lldDoc = LLDDocument(hldOutput)
+        lldOutput,lldUnProcessed =lldDoc.GenerateLLD() 
+        if not lldOutput:
+            return jsonify({'error': 'An error occured in server'}), 500
+        generate_word_from_txt(lldUnProcessed.text , "LLd.txt")
+
+        time.sleep(10)
+        #Generating Code 
+        output =CodeGeneration(lldOutput)
+        if not output.CreateCode():
+            return jsonify({'error': 'An error occured in server'}), 500
+
+        
+  
+        
+      
+        
+        
+        with open(os.path.join(os.getcwd(),"AllDocuments","UserStories.txt") , "w") as file :
+            file.write(Userprocessed)
+        
+        with open(os.path.join("AllDocuments","srsOutput.txt" ), "w")as file :
+            file.write(srsOutput)
+        with open(os.path.join("AllDocuments","hldOutput.txt" ), "w") as file :
+            file.write(hldOutput)
+        with open(os.path.join("AllDocuments","lldOutput.txt" ), "w") as file :
+            file.write(lldOutput)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @app.errorhandler(Exception)
 def handle_exception(e):

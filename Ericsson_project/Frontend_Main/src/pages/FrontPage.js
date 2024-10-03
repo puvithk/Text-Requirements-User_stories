@@ -81,8 +81,8 @@ const FrontPage = () => {
           <div className="floating-shape shape2"></div>
           <div className="floating-shape shape3"></div>
           <div className="container">
-            <h1>Text Upload</h1>
-            <p className="subtitle">Seamlessly upload your text documents</p>
+            <h1>Upload The Requirements</h1>
+            <p className="subtitle">Upload your text documents</p>
 
             <div {...getRootProps()} className="dropzone">
               <input {...getInputProps()} />

@@ -7,12 +7,14 @@
   color: white;
   height: 40px;
   border: none;
+  display: flex;
   padding: 12px 30px;
   text-transform: uppercase;
   font-size: 18px;
   border-radius: 5px;
   cursor: pointer;
-
+  align-items: center;
+  justify-content: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: background-color 0.3s;
 }
@@ -25,30 +27,30 @@
   margin: 10px;
   width: 100px;
   padding: 0;
-  font-size: small;
+  font-size: 10px;
   text-align: center;
 }
 .ALL-button:disabled ,.download-section button:disabled{
   background-color: gray; /* Background color when disabled */
-  color: lightgray;       /* Text color when disabled */
+  color: rgb(239, 239, 239);       /* Text color when disabled */
   cursor: not-allowed;    /* Change cursor to indicate it's not clickable */
 }
 .Buttons{
   visibility: hidden ;
 }
 /* Document grid */
-.documents {
+.documents  {
+ 
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Two-column layout */
-  gap: 30px;
-  justify-items: center;
+  grid-template-columns: repeat(8, 1fr); /* Two-column layout */
+
 }
 
 /* Individual document box */
 .document {
   background-color: rgb(255, 255, 255);
 color: rgb(0, 0, 0);
-  width: 180px;
+  width: 110px;
   height: 120px;
   border-radius: 10px;
   display: flex;
@@ -56,7 +58,7 @@ color: rgb(0, 0, 0);
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 16px;
+  font-size: 14px;
   text-align: center;
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -111,4 +113,26 @@ text-align: center;
 }
 .Main-button{
   margin-bottom: 10px;
+  text-align: center;
+  width: 300px;
+}
+.toaster{
+  position: fixed;
+  
+}
+.document-container{
+  display: flex;
+  align-items: center;
+}
+.download-section{
+  display: grid;
+  grid-template-columns: 2.5fr 4fr;
+  position: fixed;
+  
+  width: 100vw;
+  top: 50px;
+}
+.popup-container{
+  position: fixed;
+  height: 20px;
 }

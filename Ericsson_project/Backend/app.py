@@ -12,8 +12,8 @@ import logging
 import multiprocessing
 from multiprocessing import Manager
 from GeneratingDoc import UserStories
-from GenertingDocument import CodeGeneration, HLDDocument,LLDDocument,UserStories,SRSDocument
-from ConvertToDoc import generate_word_from_txt ,txt_to_docx
+from GenertingDocument import CodeGeneration, HLDDocument,LLDDocument,UserStories,SRSDocument,TOLSTestCase
+from ConvertToDoc import generate_word_from_txt ,txt_to_docx ,  text_doc,create_table_doc
 app = Flask(__name__)
 CORS(app, resources={r"/upload": {"origins": "*"}}) 
 CORS(app, resources={r"/refresh": {"origins": "*"}}) 
@@ -39,10 +39,12 @@ def document_status():
     "SRS": False,
     "HLD": False,
     "LLD": False,
-    "FullCode": False
+    "FullCode": False,
+    "TestCase": False,
+    "TOLs" :False
     }
     for i , j  in DOCUMENT_STATUS.items():
-        print(os.path.join(DOCUMENTS_DIR, f'{i}.docx'))
+      
         if os.path.exists(os.path.join(DOCUMENTS_DIR, f'{i}.docx')):
         
             DOCUMENT_STATUS[i] = True
@@ -50,7 +52,7 @@ def document_status():
     if os.listdir(os.path.join(os.getcwd(), 'FullCode')):
         DOCUMENT_STATUS["FullCode"] = True
 
-    print(DOCUMENT_STATUS)
+    
     return jsonify(DOCUMENT_STATUS), 200
         
 @app.route('/upload', methods=['POST', 'OPTIONS'])
@@ -125,7 +127,13 @@ def generate_All_file(filename ):
         if not lldOutput:
             return jsonify({'error': 'An error occured in server'}), 500
         generate_word_from_txt(lldUnProcessed.text , "LLd.txt")
-     
+        TOLDoc = TOLSTestCase(lldOutput)
+        TOLOutput , TOLUnprocessed = TOLDoc.GenerateTOL()
+        text_doc(TOLOutput , "TOLs.txt")
+
+
+        TestCase ,TestUnprocessed = TOLDoc.GenerateTestCase()
+        text_doc(TestCase , "TestCase.txt")
         time.sleep(10)
         #Generating Code 
         output =CodeGeneration(lldOutput)
@@ -200,7 +208,27 @@ def get_lld():
         return send_file(file_path, as_attachment=True, download_name="LLD.docx")
     else:
         return abort(404, description="File not found")
+    
 
+
+@app.route('/get_TOL', methods=['GET'])
+def get_TOL():
+    file_path = os.path.join(DOCUMENTS_DIR, "TOLs.docx")
+    while not os.path.exists(file_path):
+        time.sleep(1)
+    if os.path.exists(file_path):
+        return send_file(file_path, as_attachment=True, download_name="TOLs.docx")
+    else:
+        return abort(404, description="File not found")
+@app.route('/get_testCase', methods=['GET'])
+def get_TestCase():
+    file_path = os.path.join(DOCUMENTS_DIR, "TestCase.docx")
+    while not os.path.exists(file_path):
+        time.sleep(1)
+    if os.path.exists(file_path):
+        return send_file(file_path, as_attachment=True, download_name="TestCase.docx")
+    else:
+        return abort(404, description="File not found")
 @app.route('/get_all_documents', methods=['GET'])
 def get_all_documents():
     try:
@@ -209,7 +237,9 @@ def get_all_documents():
             ("UserStories.docx", "UserStories.docx"),
             ("SRS.docx", "SRS.docx"),
             ("HLD.docx", "HLD.docx"),
-            ("LLD.docx", "LLd.docx")
+            ("LLD.docx", "LLd.docx"),
+            ("TOLs.docx", "TOLs.docx"),
+            ("TestCase.docx","TestCase.docx")
         ]
         
         # Create an in-memory zip file
@@ -237,14 +267,12 @@ def get_all_documents():
 @app.route('/get_full_code',methods=['GET'])
 def get_full_code():
     folder_path = os.path.join(os.getcwd(), 'FullCode')
-    
     # Path to the output zip file
     while not os.listdir(folder_path):
         time.sleep(10)
     zip_filename = os.path.join(os.getcwd(), 'FullCode.zip')
-    
+
     try:
-        
         shutil.make_archive('FullCode', 'zip', folder_path) 
 
         return send_file(zip_filename , as_attachment=True)

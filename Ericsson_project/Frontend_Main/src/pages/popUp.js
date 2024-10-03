@@ -33,7 +33,8 @@ const PopUp = (props) => {
 
   return (
     <div className="popup-container">
-      <button 
+      <button
+        style={{width : "10px"}} 
         className="popup-button" 
         onMouseEnter={showPopUp} 
         onMouseLeave={hidePopUp}

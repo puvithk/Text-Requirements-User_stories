@@ -117,6 +117,35 @@ class  LLDDocument(AIModel):
             return None,None
         print("LLD :")
         return self.LLDdoc,self.unProcessed
+class TOLSTestCase(AIModel):
+    def __init__(self,LLDDocument):
+        super().__init__()
+        self.LLDocument = LLDDocument
+        self.TOL = None
+        self.test = None 
+    def GenerateTOL(self):
+        prompt = f"""prompt_from_lld 
+        Based on the following LLD document, generate a table with the following columns
+        Here is the LLD document:
+        {self.LLDocument}
+        
+        """
+        self.TOL ,self.unProcessedTOL = self.Generate_response(prompt)
+        if not self.TOL:
+            return None,None
+        return self.TOL ,self.unProcessedTOL
+    def GenerateTestCase(self):
+        prompt = f"""
+        Based on the following Table of Limitations (TOL) document, generate test cases with the following columns: Test Case ID, Test Scenario, Pre-Conditions, Test Steps, Expected Results.
+        Here is the TOL document:
+        {self.TOL}
+        """
+        self.test ,self.unProcessedTest = self.Generate_response(prompt)
+        if not self.test:
+            return None,None
+        return self.test,self.unProcessedTest
+    def TextAutomation(self):
+        pass
 #Generating code 
 class CodeGeneration(AIModel):
     def __init__(self,LLDDocument):

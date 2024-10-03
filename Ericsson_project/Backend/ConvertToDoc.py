@@ -158,6 +158,72 @@ def txt_to_docx(txt_file, docx_file):
     output_file = txt_file.replace(".txt", ".docx")
     doc.save(os.path.join(os.getcwd(),"AllDocuments" ,output_file))
     print(f"Successfully converted '{txt_file}' to '{docx_file}'.")
+def text_doc(textString , txt_file):
+    
+    doc = Document()
+    
+    output_file = txt_file.replace(".txt", ".docx")
+    doc.add_paragraph(textString)
+    
+    
+    doc.save(os.path.join(os.getcwd(),"AllDocuments" ,output_file))
+from docx import Document
+
+def parse_input_string(input_string):
+    # Split the input string by lines and then by the delimiter '|'
+    lines = input_string.strip().split('\n')
+    
+    # Remove empty lines and strip excess whitespace
+    parsed_data = []
+    for line in lines:
+        if line.strip():  # Ignore empty lines
+            # Split the line based on '|' and strip extra spaces from each cell
+            parsed_data.append([cell.strip() for cell in line.split('|') if cell.strip()])
+    
+    return parsed_data
+
+def create_table_doc(data, txt_file):
+    # Create a new Document
+    doc = Document()
+    doc.add_heading('Component Overview Table', 0)
+    print("Came here")
+    # Add the table with appropriate number of rows and columns
+    num_rows = len(data)
+    num_cols = len(data[0])
+
+    # Define table
+    table = doc.add_table(rows=num_rows, cols=num_cols)
+
+    # Style the table
+    table.style = 'Table Grid'
+
+    # Insert the data into the table
+    for i, row in enumerate(data):
+        for j, cell_text in enumerate(row):
+            cell = table.cell(i, j)
+            cell.text = cell_text
+            if i == 0:  # Header row
+                cell_font = cell.paragraphs[0].runs[0].font
+                cell_font.bold = True
+
+    # Save the document
+    output_file = txt_file.replace(".txt", ".docx")
+    doc.save(os.path.join(os.getcwd(),"AllDocuments" ,output_file))
+
+# Example input in string format
+
+
 
 if __name__ =="__main__":
     txt_to_docx()
+
+    # Parse the string input
+    parsed_data = parse_input_string(input_string)
+
+    # Specify the file name
+    output_file = "component_overview_table.docx"
+
+    # Call the function to create the Word document
+    create_table_doc(parsed_data, output_file)
+
+    print(f"Document created: {output_file}")

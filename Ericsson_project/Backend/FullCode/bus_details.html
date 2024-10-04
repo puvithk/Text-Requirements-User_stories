@@ -1,0 +1,65 @@
+<!DOCTYPE >
+< lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Online Bus Ticketing</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                {% if 'user_id' in session %}
+                    <li><a href="/booking_history">Booking History</a></li>
+                    <li><a href="/profile">Profile</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                {% else %}
+                    <li><a href="/register">Register</a></li>
+                    <li><a href="/login">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="bus-details">
+            <h2>Bus Details</h2>
+            <div class="bus-info">
+                <p><strong>Operator:</strong> {{ bus.operator.name }}</p>
+                <p><strong>Route:</strong> {{ bus.route.source }} to {{ bus.route.destination }}</p>
+                <p><strong>Departure Time:</strong> {{ bus.departure_time.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p><strong>Arrival Time:</strong> {{ bus.arrival_time.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p><strong>Price:</strong> {{ bus.price }}</p>
+                <p><strong>Amenities:</strong>
+                    {% for amenity in bus.amenities %}
+                        {{ amenity }}
+                        {% if not loop.last %}
+                            ,
+                        {% endif %}
+                    {% endfor %}
+                </p>
+                <p><strong>Customer Rating:</strong> {{ bus.customer_rating or 'Not rated yet' }}</p>
+            </div>
+
+            <div class="seat-map">
+                <!-- Display seat map here -->
+            </div>
+
+            <form action="/book/{{ bus.id }}" method="post">
+                <!-- Display seat selection options here -->
+                <button type="submit">Book Now</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Online Bus Ticketing</p>
+    </footer>
+</body>
+</>
+
+
+##

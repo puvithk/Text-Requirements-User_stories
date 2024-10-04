@@ -1,0 +1,69 @@
+<!DOCTYPE >
+< lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Online Bus Ticketing</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                {% if 'user_id' in session %}
+                    <li><a href="/booking_history">Booking History</a></li>
+                    <li><a href="/profile">Profile</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                {% else %}
+                    <li><a href="/register">Register</a></li>
+                    <li><a href="/login">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="booking-confirmation">
+            <h2>Booking Confirmation</h2>
+            <p>Your booking has been successfully created.</p>
+            <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+            <p><strong>Bus Operator:</strong> {{ booking.bus.operator.name }}</p>
+            <p><strong>Route:</strong> {{ booking.bus.route.source }} to {{ booking.bus.route.destination }}</p>
+            <p><strong>Departure Time:</strong> {{ booking.bus.departure_time.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p><strong>Arrival Time:</strong> {{ booking.bus.arrival_time.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p><strong>Seat Numbers:</strong>
+                {% for seat_number in booking.seat_numbers %}
+                    {{ seat_number }}
+                    {% if not loop.last %}
+                        ,
+                    {% endif %}
+                {% endfor %}
+            </p>
+            <p><strong>Ticket Price:</strong> {{ booking.ticket_price }}</p>
+            <p><strong>Booking Status:</strong> {{ booking.booking_status }}</p>
+
+            {% if booking.booking_status == 'Pending' %}
+                <p>Please proceed to payment to confirm your booking.</p>
+                <form action="/payment/{{ booking.id }}" method="post" id="payment-form">
+                    <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                            data-key="{{ app.config['STRIPE_PUBLISHABLE_KEY'] }}"
+                            data-amount="{{ booking.ticket_price  100 }}"
+                            data-currency="usd"
+                            data-description="Bus Ticket Booking"
+                            data-label="Pay Now">
+                    </script>
+                </form>
+            {% endif %}
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Online Bus Ticketing</p>
+    </footer>
+</body>
+</>
+
+
+##

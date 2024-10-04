@@ -211,7 +211,95 @@ def create_table_doc(data, txt_file):
     doc.save(os.path.join(os.getcwd(),"AllDocuments" ,output_file))
 
 # Example input in string format
+def TOLS_text_doc(data , txt_file):
+    
+    # Create a new .docx document
+    doc = Document()
 
+    # Add a title to the document
+    doc.add_heading('Table of Limitations (TOL)', 0)
+
+    # Add a brief description
+    doc.add_paragraph('This document contains the Table of Limitations based on the LLD provided.')
+
+    # Split the generated TOL text into lines (for parsing)
+    tol_lines = data.split('\n')
+
+    # Start adding the table (3 columns)
+    table = doc.add_table(rows=1, cols=3)
+    table.style = 'Table Grid'
+
+    # Add header row to the table
+    hdr_cells = table.rows[0].cells
+
+    listNew = [' Test Operation ID',' Operation Description',' Linked Requirements','---']
+    # Add rows from TOL lines
+    for line in tol_lines:
+        # Assuming the generated text follows a consistent format, parse each line
+        if line.strip():  # Check if the line is not empty
+            # Split the line into columns based on tabs or another separator
+            columns = line.split('|')  # Adjust separator if needed 
+            print(columns)
+            # Add a new row to the table
+            row_cells = table.add_row().cells
+            if len(columns)>1 and columns[1].replace(" ","") in listNew :
+                continue 
+            row_cells[0].text = columns[1] if len(columns) > 1 else ""
+            row_cells[1].text = columns[2] if len(columns) > 2 else ""
+            row_cells[2].text = columns[3] if len(columns) > 3 else ""
+
+    # Save the document to disk
+    save_path = os.path.join(os.getcwd(),"AllDocuments" ,txt_file.replace(".txt",".docx"))  # Change this to your desired path
+
+    # Save the document to the specified path
+    doc.save(save_path)
+
+def TOLS_text_TestCase(data , txt_file):
+    
+    
+    # Create a new .docx document
+    doc = Document()
+
+    # Add a title to the document
+    doc.add_heading('Table of Test Case ', 0)
+
+    # Add a brief description
+
+
+    # Split the generated TOL text into lines (for parsing)
+    tol_lines = data.split('\n')
+
+    # Start adding the table (3 columns)
+    table = doc.add_table(rows=1, cols=5)
+    table.style = 'Table Grid'
+
+    # Add header row to the table
+    hdr_cells = table.rows[0].cells
+
+    listNew = [' Test Operation ID',' Operation Description',' Linked Requirements','---']
+    # Add rows from TOL lines
+    for line in tol_lines:
+        # Assuming the generated text follows a consistent format, parse each line
+        if line.strip():  # Check if the line is not empty
+            # Split the line into columns based on tabs or another separator
+            columns = line.split('|')  # Adjust separator if needed 
+            print(columns)
+            # Add a new row to the table
+            row_cells = table.add_row().cells
+            if len(columns)>1 and columns[1].replace(" ","") in listNew :
+                continue 
+            row_cells[0].text = columns[1] if len(columns) > 1 else ""
+            row_cells[1].text = columns[2] if len(columns) > 2 else ""
+            row_cells[2].text = columns[3] if len(columns) > 3 else ""
+            row_cells[3].text = columns[4] if len(columns) > 4 else ""
+            row_cells[4].text = columns[5] if len(columns) > 5 else ""
+            
+
+    
+    save_path = os.path.join(os.getcwd(),"AllDocuments" ,txt_file.replace(".txt",".docx"))  # Change this to your desired path
+
+    # Save the document to the specified path
+    doc.save(save_path)
 
 
 if __name__ =="__main__":

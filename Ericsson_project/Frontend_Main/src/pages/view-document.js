@@ -177,7 +177,7 @@ const ViewDoc = () => {
     <div className="document-container">
         <div className="document" aria-label="Download Full Code Document">
            Test Automation
-            <button onClick={() => downloadDocument('http://127.0.0.1:5000/get_test_auto')} disabled={!documentStatus.FullCode} className='ALL-button'>{documentStatus.FullCode ? "DOWNLOAD" : documentStatus.LLD? "Processing": "DOWNLOAD"}</button>
+            <button onClick={() => downloadDocument('http://127.0.0.1:5000/get_test_auto')} disabled={!documentStatus.TestAuto} className='ALL-button'>{documentStatus.TestAuto ? "DOWNLOAD" : documentStatus.TestCase? "Processing": "DOWNLOAD"}</button>
         </div>
         <Arrow/>
     </div>

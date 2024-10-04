@@ -1,0 +1,10 @@
+Flask==2.2.3
+Flask-SQLAlchemy==3.0.4
+bcrypt==3.2.0
+-dotenv==0.21.0
+requests==2.31.0
+stripe==2.82.0
+twilio==8.1.0
+
+
+##

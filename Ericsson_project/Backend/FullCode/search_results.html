@@ -1,0 +1,71 @@
+<!DOCTYPE >
+< lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Online Bus Ticketing</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                {% if 'user_id' in session %}
+                    <li><a href="/booking_history">Booking History</a></li>
+                    <li><a href="/profile">Profile</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                {% else %}
+                    <li><a href="/register">Register</a></li>
+                    <li><a href="/login">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="search-results">
+            <h2>Search Results</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Operator</th>
+                        <th>Departure Time</th>
+                        <th>Arrival Time</th>
+                        <th>Price</th>
+                        <th>Amenities</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bus in buses %}
+                        <tr>
+                            <td>{{ bus.operator.name }}</td>
+                            <td>{{ bus.departure_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ bus.arrival_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ bus.price }}</td>
+                            <td>
+                                {% for amenity in bus.amenities %}
+                                    {{ amenity }}
+                                    {% if not loop.last %}
+                                        ,
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td><a href="/bus/{{ bus.id }}">View Details</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Online Bus Ticketing</p>
+    </footer>
+</body>
+</>
+
+
+##

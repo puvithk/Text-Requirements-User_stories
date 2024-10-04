@@ -1,0 +1,74 @@
+<!DOCTYPE >
+< lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Online Bus Ticketing</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                {% if 'user_id' in session %}
+                    <li><a href="/booking_history">Booking History</a></li>
+                    <li><a href="/profile">Profile</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                {% else %}
+                    <li><a href="/register">Register</a></li>
+                    <li><a href="/login">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="booking-history">
+            <h2>Booking History</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Bus Operator</th>
+                        <th>Route</th>
+                        <th>Departure Time</th>
+                        <th>Arrival Time</th>
+                        <th>Ticket Price</th>
+                        <th>Booking Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                        <tr>
+                            <td>{{ booking.id }}</td>
+                            <td>{{ booking.bus.operator.name }}</td>
+                            <td>{{ booking.bus.route.source }} to {{ booking.bus.route.destination }}</td>
+                            <td>{{ booking.bus.departure_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ booking.bus.arrival_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ booking.ticket_price }}</td>
+                            <td>{{ booking.booking_status }}</td>
+                            <td>
+                                {% if booking.booking_status == 'Pending' %}
+                                    <a href="/payment/{{ booking.id }}">Pay Now</a>
+                                {% elif booking.booking_status == 'Confirmed' %}
+                                    <a href="/cancel_booking/{{ booking.id }}">Cancel Booking</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Online Bus Ticketing</p>
+    </footer>
+</body>
+</>
+
+
+##

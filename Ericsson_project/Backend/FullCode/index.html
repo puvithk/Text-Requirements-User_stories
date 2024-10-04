@@ -1,0 +1,65 @@
+<!DOCTYPE >
+< lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Bus Ticketing</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Online Bus Ticketing</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                {% if 'user_id' in session %}
+                    <li><a href="/booking_history">Booking History</a></li>
+                    <li><a href="/profile">Profile</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                {% else %}
+                    <li><a href="/register">Register</a></li>
+                    <li><a href="/login">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="search">
+            <h2>Search for Buses</h2>
+            <form action="/search" method="get">
+                <label for="source">Source:</label>
+                <input type="text" id="source" name="source" required>
+
+                <label for="destination">Destination:</label>
+                <input type="text" id="destination" name="destination" required>
+
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date" required>
+
+                <label for="time">Time:</label>
+                <input type="time" id="time" name="time" required>
+
+                <button type="submit">Search</button>
+            </form>
+        </section>
+
+        <section class="featured-routes">
+            <h2>Featured Routes</h2>
+            <!-- Display featured routes here -->
+        </section>
+
+        <section class="promotions">
+            <h2>Promotions</h2>
+            <!-- Display promotions here -->
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Online Bus Ticketing</p>
+    </footer>
+</body>
+</>
+
+
+##

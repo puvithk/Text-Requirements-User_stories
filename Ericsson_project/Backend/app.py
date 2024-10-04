@@ -13,7 +13,7 @@ import multiprocessing
 from multiprocessing import Manager
 from GeneratingDoc import UserStories
 from GenertingDocument import CodeGeneration, HLDDocument,LLDDocument,UserStories,SRSDocument,TOLSTestCase
-from ConvertToDoc import generate_word_from_txt ,txt_to_docx ,  text_doc,create_table_doc
+from ConvertToDoc import generate_word_from_txt ,txt_to_docx ,  text_doc,create_table_doc,TOLS_text_doc,TOLS_text_TestCase
 app = Flask(__name__)
 CORS(app, resources={r"/upload": {"origins": "*"}}) 
 CORS(app, resources={r"/refresh": {"origins": "*"}}) 
@@ -130,14 +130,14 @@ def generate_All_file(filename ):
         generate_word_from_txt(lldUnProcessed.text , "LLd.txt")
         TOLDoc = TOLSTestCase(lldOutput)
         TOLOutput , TOLUnprocessed = TOLDoc.GenerateTOL()
-        text_doc(TOLOutput , "TOLs.txt")
+        TOLS_text_doc(TOLOutput , "TOLs.txt")
 
 
         TestCase ,TestUnprocessed = TOLDoc.GenerateTestCase()
-        text_doc(TestCase , "TestCase.txt")
+        TOLS_text_TestCase(TestCase , "TestCase.txt")
         
         TestAutoMation , UnprocessedTestAuto = TOLDoc.TextAutomation()
-        generate_word_from_txt(UnprocessedTestAuto.text , "TestAuto.txt")
+        generate_word_from_txt(TestAutoMation , "TestAuto.txt")
         time.sleep(10)
 
         #Generating Code 

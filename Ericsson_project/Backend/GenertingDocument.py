@@ -124,11 +124,11 @@ class TOLSTestCase(AIModel):
         self.TOL = None
         self.test = None 
     def GenerateTOL(self):
-        prompt = f"""prompt_from_lld 
-        Based on the following LLD document, generate a table with the following columns
+        prompt = f"""
+        Based on the following LLD document, generate a table with the following columns: Test Operation ID, Operation Description, Linked Requirements.
         Here is the LLD document:
         {self.LLDocument}
-        
+        Format the table with rows containing the respective information for each test operation. Ensure the table is well-structured.
         """
         self.TOL ,self.unProcessedTOL = self.Generate_response(prompt)
         if not self.TOL:
@@ -166,6 +166,7 @@ class TOLSTestCase(AIModel):
         self.testAuto ,self.unProcessedTestAuto = self.Generate_response(prompt)
         if not self.test:
             return None,None
+        print(self.testAuto)
         return self.testAuto ,  self.unProcessedTestAuto
 #Generating code 
 class CodeGeneration(AIModel):

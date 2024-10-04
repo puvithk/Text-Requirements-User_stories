@@ -17,7 +17,8 @@ const ViewDoc = () => {
         LLD: false,
         FullCode: false,
         TOLs : false,
-        TestCase : false
+        TestCase : false,
+        TestAuto:false
     });
     const [LoadVisible, setLoadVisible] = useState(false);
     const [Loading, setLoading] = useState(false);
@@ -78,9 +79,12 @@ const ViewDoc = () => {
                     }
                     if (!previousStatus.TestCase && newStatus.TestCase) {
                         toast.success("TestCase is ready for download!");
+                        toast.info("Test Automation Code is Processing ")
+                    }
+                    if (!previousStatus.TestAuto && newStatus.TestAuto) {
+                        toast.success("Test Automation code is ready for download!");
                         toast.info("Code  is Processing ")
                     }
-
                     // Update document status with the new state
                     setDocumentStatus(newStatus);
                     previousStatus = newStatus; // Update previousStatus for next check
@@ -169,6 +173,16 @@ const ViewDoc = () => {
         </div>
      <Arrow/>
     </div>
+
+    <div className="document-container">
+        <div className="document" aria-label="Download Full Code Document">
+           Test Automation
+            <button onClick={() => downloadDocument('http://127.0.0.1:5000/get_test_auto')} disabled={!documentStatus.FullCode} className='ALL-button'>{documentStatus.FullCode ? "DOWNLOAD" : documentStatus.LLD? "Processing": "DOWNLOAD"}</button>
+        </div>
+        <Arrow/>
+    </div>
+
+
     <div className="document-container">
         <div className="document" aria-label="Download Full Code Document">
             Code

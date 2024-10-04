@@ -6,6 +6,7 @@
   background-color: #4CAF50;
   color: white;
   height: 40px;
+  
   border: none;
   display: flex;
   padding: 12px 30px;
@@ -42,7 +43,7 @@
 .documents  {
  
   display: grid;
-  grid-template-columns: repeat(8, 1fr); /* Two-column layout */
+  grid-template-columns: repeat(9, 1fr); /* Two-column layout */
 
 }
 

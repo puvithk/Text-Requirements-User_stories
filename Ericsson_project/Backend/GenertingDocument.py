@@ -145,7 +145,28 @@ class TOLSTestCase(AIModel):
             return None,None
         return self.test,self.unProcessedTest
     def TextAutomation(self):
-        pass
+        prompt = f"""
+        Based on the following Table of Limitations (TOL) document, generate test automation code using the Robot Framework. The code should include:
+
+        1. Test suites for each layer (Presentation, Business Logic, Data Access, Security, and Deployment).
+        2. Keywords for reusable actions.
+        3. Test cases that perform the following checks:
+        - Validate UI components and responsiveness.
+        - Microservice operation checks like seat allocation, booking confirmation.
+        - SQL queries for data retrieval and integrity.
+        - Security measures like API authentication and encryption.
+        - Performance testing for scaling and CI/CD processes.
+
+        Here is the TOL document:
+        {self.TOL}
+
+        Ensure the code is well-structured and can be directly used in Robot Framework.
+
+                                        """
+        self.testAuto ,self.unProcessedTestAuto = self.Generate_response(prompt)
+        if not self.test:
+            return None,None
+        return self.testAuto ,  self.unProcessedTestAuto
 #Generating code 
 class CodeGeneration(AIModel):
     def __init__(self,LLDDocument):

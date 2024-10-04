@@ -41,7 +41,8 @@ def document_status():
     "LLD": False,
     "FullCode": False,
     "TestCase": False,
-    "TOLs" :False
+    "TOLs" :False,
+    "TestAuto":False
     }
     for i , j  in DOCUMENT_STATUS.items():
       
@@ -134,7 +135,11 @@ def generate_All_file(filename ):
 
         TestCase ,TestUnprocessed = TOLDoc.GenerateTestCase()
         text_doc(TestCase , "TestCase.txt")
+        
+        TestAutoMation , UnprocessedTestAuto = TOLDoc.TextAutomation()
+        generate_word_from_txt(UnprocessedTestAuto.text , "TestAuto.txt")
         time.sleep(10)
+
         #Generating Code 
         output =CodeGeneration(lldOutput)
         if not output.CreateCode():
@@ -229,6 +234,20 @@ def get_TestCase():
         return send_file(file_path, as_attachment=True, download_name="TestCase.docx")
     else:
         return abort(404, description="File not found")
+    
+@app.route('/get_test_auto', methods=['GET'])
+def get_TestAuto():
+    file_path = os.path.join(DOCUMENTS_DIR, "TestAuto.docx")
+    while not os.path.exists(file_path):
+        time.sleep(1)
+    if os.path.exists(file_path):
+        return send_file(file_path, as_attachment=True, download_name="TestAuto.docx")
+    else:
+        return abort(404, description="File not found")
+
+
+
+   
 @app.route('/get_all_documents', methods=['GET'])
 def get_all_documents():
     try:
@@ -239,7 +258,8 @@ def get_all_documents():
             ("HLD.docx", "HLD.docx"),
             ("LLD.docx", "LLd.docx"),
             ("TOLs.docx", "TOLs.docx"),
-            ("TestCase.docx","TestCase.docx")
+            ("TestCase.docx","TestCase.docx"),
+            ("TestAuto.docx","TestAuto.docx")
         ]
         
         # Create an in-memory zip file

@@ -16,7 +16,7 @@ This exploration provides a broad view of the stages involved in an E2E developm
 - **[@PuvithKumar](https://github.com/PuvithKumar)**
 - **[@Divayshree](https://github.com/divya05shree)**
 - **[@Satyamsrivastava](https://github.com/Satyamsrivastava-Dev)** 
-- **[@Saanvi](https://github.com/Saanvi)**
+- **[@Saanvi](https://github.com/)**
 
 Feel free to reach out to any of the contributors for more insights or to collaborate on future versions of the project.
 
